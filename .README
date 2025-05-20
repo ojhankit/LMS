@@ -7,7 +7,7 @@ git clone https://github.com/ojhankit/LMS
 cd LMS
 
 2. Install Dependencies
-npm install
+npm install sequelize,express,jsonwebtoken,bcrypt,joi,mysql2,dotenv
 
 3. Create the database
   Set up your MySQL or PostgreSQL database.
@@ -31,6 +31,23 @@ Role	Permissions
 Admin	:- Add/update/delete books, approve members, view/update.delete users
 Member :- 	Borrow and return books, view book list
 Librarian :- see borrowed books and returned books
+
+API Routes
+1. /register (Admin,Librarian,Member)
+2. /login    (Admin,Librarian,Member)
+3. /approve (Admin)
+4. /update/:id (user)
+5. /delete/:id (user)
+6. post /book (Admin)
+7. update /book (Admin)
+8. delete /book (Admin)
+9. get /book (Member,Admin)
+10. get /book/:id (Member,Admin)
+11. /borrow (Member)
+12. /return (Member)
+13. /borrowed-book (Librarian)
+14. /returned-book (Librarian)
+
 
 👨‍💻 Tech Stack
 Node.js
