@@ -9,6 +9,7 @@ dotenv.config()
 
 const app = express()
 app.use(express.json())
+require('./models'); 
 
 // Routes
 app.use('/api/auth', authRoutes)
@@ -28,17 +29,18 @@ sequelize.authenticate()
   .catch((err) => console.error('Database error:', err))*/
 
 // Syncing models and test Database
-sequelize.sync().then(()=> {
-  console.log('Database Synced')
-  return sequelize.authenticate()
-})
-  .then(()=> {
-    console.log('Database Connected')
+sequelize
+  .sync({ alter: true })
+  .then(() => {
+    console.log('Database Synced');
+    return sequelize.authenticate();
   })
-  .catch((e)=> {
-    console.log('Database error',e);
-  }) 
-
+  .then(() => {
+    console.log('Database Connected');
+  })
+  .catch((e) => {
+    console.log('Database error', e);
+  });
 
 const PORT = process.env.PORT || 3000
 app.listen(PORT, () => 

@@ -1,11 +1,15 @@
-const { Book , BorrowedBook } = require('../models')
+const db = require('../models');
+const User = db.User
+const Book = db.Book;
+const BorrowedBook  = db.BorrowedBook
 
 const borrowBook = async(req,res) => {
-    const uId = req.user.id
-    const bId = req.params.bookId
+
+    const userId = req.user.id
+    const bookId = req.params.bookId
 
     try{
-        const book = await Book.findByPK(bookId)
+        const book = await Book.findByPk(bookId)
         if(!book || book.quantity < 1){
             return res.status(400).json({
                 message: 'Book not available'
@@ -13,7 +17,7 @@ const borrowBook = async(req,res) => {
         }
 
         const alreadyBorrowed = await BorrowedBook.findOne({
-            where : { uId, bId, returnDate: null}
+            where : { userId, bookId, returnDate: null}
         })
 
         if(alreadyBorrowed){
@@ -25,6 +29,8 @@ const borrowBook = async(req,res) => {
         await BorrowedBook.create({userId,bookId})
 
         book.quantity -= 1
+        await book.save()
+
         res.status(200).json({
             message:"Book Borrowed Successfully"
         })
@@ -38,8 +44,8 @@ const borrowBook = async(req,res) => {
 }
 
 const returnBook = async(req,res) => {
-    const uid = req.user.id
-    const bid = req.params.bookId
+    const userid = req.user.id
+    const bookid = req.params.bookId
     try{
         const borrowRecord = await BorrowedBook.findOne({
             where : {uid ,bid ,returnDate: null}
@@ -53,7 +59,7 @@ const returnBook = async(req,res) => {
         borrowRecord.returnDate = new Date()
         await borrowRecord.save()
 
-        const book = await Book.findByPK(bid)
+        const book = await Book.findByPk(bookid)
         book.quantity += 1
         await book.save()
         res.status(200).json({ message: "Book returned successfully." })
@@ -62,4 +68,43 @@ const returnBook = async(req,res) => {
         res.status(500).json({ message: "Error returning book", error: err.message })
     }
 }
-modules.export = {borrowBook,}
+
+const getBorrowedBooks = async(req,res) => {
+    try{
+        const borrowed = await BorrowedBook.findAll({
+        where: { returnDate: null },  // not returned yet
+        include: [
+            { model: User, attributes: ['id', 'name', 'email'] },
+            { model: Book, attributes: ['id', 'title', 'author'] }
+        ],
+        order: [['createdAt', 'DESC']]
+        });
+        res.status(200).json(borrowed);
+    }
+    catch(e) {
+        res.status(500).json({
+        message: 'Error fetching borrowed books',
+        error: error.message
+        });
+    }
+}
+
+const getReturnedBooks = async (req, res) => {
+  try {
+    const returned = await BorrowedBook.findAll({
+      where: { returnDate: { [db.Sequelize.Op.ne]: null } }, // returnDate is NOT null
+      include: [
+        { model: User, attributes: ['id', 'name', 'email'] },
+        { model: Book, attributes: ['id', 'title', 'author'] }
+      ],
+      order: [['returnDate', 'DESC']]
+    });
+    res.status(200).json(returned);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error fetching returned books',
+      error: error.message
+    });
+  }
+};
+module.exports = {borrowBook,returnBook,getBorrowedBooks,getReturnedBooks}

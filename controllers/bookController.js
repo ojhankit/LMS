@@ -1,4 +1,5 @@
-const { Book } = require('../models/Book')
+const db = require('../models');
+const Book = db.Book;
 
 // create Book
 const createBook = async (req,res) => {
@@ -17,7 +18,7 @@ const createBook = async (req,res) => {
 const getAllBook = async (req,res) => {
     try{
         const books = await Book.findAll()
-        req.json(books)
+        res.json(books)
     }
     catch(e){
         res.status(500).json({
@@ -29,8 +30,8 @@ const getAllBook = async (req,res) => {
 // get Book By Id
 const getBookById = async(req,res) => {
     try{
-        const book = await Book.findById(req.params)
-        req.json(book)
+        const book = await Book.findByPk(req.params)
+        res.json(book)
     }
     catch(e){
         res.status(500).json({
@@ -42,6 +43,7 @@ const getBookById = async(req,res) => {
 // update Book
 const updateBook = async(req,res) => {
     try{
+        const {id} = req.params
         const updated = await Book.update(req.body,{where: {id}})
         if (updated[0] == 0){
             return res.status(404).json({

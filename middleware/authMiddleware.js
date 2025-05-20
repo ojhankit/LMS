@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const User = require('../models/User')
+const {User} = require("../models")
 
 const verifyToken = async (req,res,next) => {
     const token = req.headers['authorization']
@@ -24,7 +24,8 @@ const verifyToken = async (req,res,next) => {
     }
     catch(e){
         return res.status(401).json({
-            message:'Invalid Token'
+            message:'Invalid Token',
+            error:e.message
         })
     }
 }

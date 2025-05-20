@@ -1,2 +1,5 @@
 .env
 node_modules
+.txt
+./controllers/returnController
+./routes/.cph

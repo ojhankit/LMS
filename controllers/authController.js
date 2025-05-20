@@ -1,7 +1,8 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const Joi = require('joi')
-const User = require('../models/User')
+const db = require('../models');
+const User = db.User;
 
 const generateToken = (user) => {
     return jwt.sign(
@@ -18,21 +19,21 @@ const generateToken = (user) => {
 
 const register = async (req,res) => {
     const schema = Joi.object({
-        name: Joi.string.required(),
-        email: Joi.string.required(),
+        name: Joi.string().required(),
+        email: Joi.string().required(),
         phone: Joi.string().required(),
         role: Joi.string().valid('Admin','Librarian','Member').optional()
     })
 
-    const {e} = schema.validate(req.body)
-    if (e){
+    const { error } = schema.validate(req.body)
+    if (error) {
         return res.status(400).json({
-            message:e.details[0].message
+            message: error.details[0].message
         })
     }
 
     const {name,email,phone,role='Member'} = req.body
-
+    console.log(name,email,phone)
     try {
         const existingUser = await User.findOne({
             where: {email}
@@ -52,7 +53,7 @@ const register = async (req,res) => {
         })
         
         // for dev only
-        console.log(`password for ${name} is ${rawPassword}`)
+        //console.log(`password for ${name} is ${rawPassword}`)
         
         res.status(201).json({
             message: `Resgistration Succesfull ${role === 'Admin'?' ':' Waiting For Admin Approval'}`,
@@ -61,8 +62,10 @@ const register = async (req,res) => {
     }
     
     catch(e) {
+        console.error('Registration Error:', e);
         return res.status(500).json({
-            message:'Somethig went wrong'
+            message:'Something went wrong',
+            error: e.message
         })
     }
 }
@@ -96,5 +99,6 @@ const login = async (req, res) => {
     res.status(500).json({ message: 'Login failed' });
   }
 };
+
 
 module.exports = { register, login };

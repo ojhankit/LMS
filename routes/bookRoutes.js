@@ -12,4 +12,4 @@ router.post("/", verifyToken, isAdmin, bookController.createBook);
 router.put("/:id", verifyToken, isAdmin, bookController.updateBook);
 router.delete("/:id", verifyToken, isAdmin, bookController.deleteBook);
 
-module.exports = router;
+module.exports = router
