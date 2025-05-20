@@ -1,0 +1,44 @@
+📚 Library Management API
+This is a simple Node.js + Express + Sequelize project to manage a library. Users can register, borrow and return books. Admins can manage users and books.
+
+🚀 Project Setup
+1. Clone the project
+git clone https://github.com/ojhankit/LMS
+cd LMS
+
+2. Install Dependencies
+npm install
+
+3. Create the database
+  Set up your MySQL or PostgreSQL database.
+
+  Create a .env file and add
+  DB_NAME=your_db_name
+  DB_USER=your_db_user
+  DB_PASSWORD=your_password
+  DB_HOST=localhost
+  JWT_SECRET=your_secret_key
+
+4. Start the Server
+node server.js
+
+The API will run on http://localhost:3000/
+
+
+🔐 Role Permissions
+Role	Permissions
+
+Admin	:- Add/update/delete books, approve members, view/update.delete users
+Member :- 	Borrow and return books, view book list
+Librarian :- see borrowed books and returned books
+
+👨‍💻 Tech Stack
+Node.js
+
+Express.js
+
+Sequelize ORM
+
+MySQL / PostgreSQL
+
+JWT for authentication
