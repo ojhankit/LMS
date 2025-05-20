@@ -1,9 +1,11 @@
+// necessary imports
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const Joi = require('joi')
 const db = require('../models');
 const User = db.User;
 
+// Generates token for every user on their Login and expires after threshold time
 const generateToken = (user) => {
     return jwt.sign(
         {   
@@ -17,7 +19,9 @@ const generateToken = (user) => {
     )
 }
 
+// Register Controller
 const register = async (req,res) => {
+    // For Validation of Input
     const schema = Joi.object({
         name: Joi.string().required(),
         email: Joi.string().required(),
@@ -49,7 +53,7 @@ const register = async (req,res) => {
         const hashPassword = await bcrypt.hash(rawPassword,10)
 
         const newUser = await User.create( {
-            name,email,phone,password:hashPassword,role,isApproved: role==='Admin'?true:false
+            name,email,phone,password:hashPassword,role,isApproved: role==='Admin'?true:false // If Admin then no need of approval from other user
         })
         
         // for dev only
@@ -70,6 +74,7 @@ const register = async (req,res) => {
     }
 }
 
+// Login Controller
 const login = async (req, res) => {
   const schema = Joi.object({
     email: Joi.string().email().required(),
@@ -93,6 +98,7 @@ const login = async (req, res) => {
     if (!match)
       return res.status(401).json({ message: 'Invalid email or password' });
 
+    // After Successfull login generate token
     const token = generateToken(user);
     res.json({ token });
   } catch (err) {

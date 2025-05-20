@@ -1,21 +1,21 @@
+// Importing required modules
 const db = require('../models');
-//console.log(db)
 const User = db.User;
 const { Op } = require("sequelize");
 
-
+// Controller for approving user by setting isApproved = true . Only used by Admin
 const approveUser = async(req,res) => {
     const {id} = req.params
 
     try {
-        const user = await User.findByPk(id)
-
+        const user = await User.findByPk(id) // Finds user by their primary key
+        //if user doesnot exist
         if(!user) {
             return res.status(404).json({
                 message:'User not found'
             })
         }
-
+        //if exist approve it and then save
         user.isApproved = true
         await user.save()
 
@@ -31,6 +31,7 @@ const approveUser = async(req,res) => {
     }
 }
 
+// Controller for updating user 
 const updateUser = async(req,res) => {
     const {id} = req.params
 
@@ -53,6 +54,7 @@ const updateUser = async(req,res) => {
     }
 }
 
+// Controller for deleting user
 const deleteUser = async(req,res) => {
     const {id} = req.params
     try{
@@ -75,12 +77,13 @@ const deleteUser = async(req,res) => {
     }
 }
 
+// Controller for fetching list of all user (Members and Librarian)
 const getUsers = async(req,res) => {
     try{
         const users = await User.findAll({
             where: {
                 role:{
-                    [Op.ne] : 'Admin'
+                    [Op.ne] : 'Admin' // leave admin
                 }
             },
             attributes: { exclude: ['password'] }  
@@ -99,6 +102,7 @@ const getUsers = async(req,res) => {
     }
 }
 
+// Fetch a Single user
 const getUser = async(req,res) => {
     const userId = req.params.id
 
@@ -124,4 +128,5 @@ const getUser = async(req,res) => {
         })
     }
 }
+
 module.exports = {approveUser ,updateUser ,deleteUser ,getUsers,getUser}

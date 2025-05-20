@@ -1,3 +1,4 @@
+// imports
 const db = require('../models');
 const User = db.User
 const Book = db.Book;
@@ -48,7 +49,7 @@ const returnBook = async(req,res) => {
     const bookid = req.params.bookId
     try{
         const borrowRecord = await BorrowedBook.findOne({
-            where : {uid ,bid ,returnDate: null}
+            where : {userid ,bookid ,returnDate: null}
         })
         if(!borrowRecord){
             return res.status(404).json({
@@ -65,7 +66,7 @@ const returnBook = async(req,res) => {
         res.status(200).json({ message: "Book returned successfully." })
     }
     catch(e){
-        res.status(500).json({ message: "Error returning book", error: err.message })
+        res.status(500).json({ message: "Error returning book", error: e.message })
     }
 }
 
@@ -84,7 +85,7 @@ const getBorrowedBooks = async(req,res) => {
     catch(e) {
         res.status(500).json({
         message: 'Error fetching borrowed books',
-        error: error.message
+        error: e.message
         });
     }
 }
@@ -103,8 +104,9 @@ const getReturnedBooks = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: 'Error fetching returned books',
-      error: error.message
+      error: e.message
     });
   }
 };
+
 module.exports = {borrowBook,returnBook,getBorrowedBooks,getReturnedBooks}
