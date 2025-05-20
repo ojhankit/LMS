@@ -1,15 +1,20 @@
 const express = require('express')
 const dotenv = require('dotenv')
-
 const sequelize = require('./config')
-
+const adminRoutes = require('./routes/adminRoutes')
+const authRoutes = require('./routes/authRoutes')
+const bookRoutes = require('./routes/bookRoutes')
+const borrowRoutes = require('./routes/borrowRoutes')
 dotenv.config()
 
 const app = express()
 app.use(express.json())
 
 // Routes
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRoutes)
+app.use('/api/admin', adminRoutes)
+app.use('/api/books',bookRoutes)
+app.use('/api/',borrowRoutes)
 
 // test route
 app.get('/',(req,res) => {

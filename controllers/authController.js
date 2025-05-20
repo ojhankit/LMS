@@ -2,7 +2,6 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const Joi = require('joi')
 const User = require('../models/User')
-const Joi = require('joi')
 
 const generateToken = (user) => {
     return jwt.sign(
@@ -21,7 +20,8 @@ const register = async (req,res) => {
     const schema = Joi.object({
         name: Joi.string.required(),
         email: Joi.string.required(),
-        phone: Joi.string().required()
+        phone: Joi.string().required(),
+        role: Joi.string().valid('Admin','Librarian','Member').optional()
     })
 
     const {e} = schema.validate(req.body)
@@ -31,7 +31,7 @@ const register = async (req,res) => {
         })
     }
 
-    const {name,email,phone} = req.body
+    const {name,email,phone,role='Member'} = req.body
 
     try {
         const existingUser = await User.findOne({
@@ -48,11 +48,14 @@ const register = async (req,res) => {
         const hashPassword = await bcrypt.hash(rawPassword,10)
 
         const newUser = await User.create( {
-            name,email,phone,password:hashPassword
+            name,email,phone,password:hashPassword,role,isApproved: role==='Admin'?true:false
         })
-
+        
+        // for dev only
+        console.log(`password for ${name} is ${rawPassword}`)
+        
         res.status(201).json({
-            message: 'Resgistration Succesfull.Waiting For Admin Approval',
+            message: `Resgistration Succesfull ${role === 'Admin'?' ':' Waiting For Admin Approval'}`,
             generatedPassword: rawPassword
         })
     }

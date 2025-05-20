@@ -30,4 +30,11 @@ const User = sequelize.define('User', {
     }
 })
 
+User.associate = (models) => {
+    User.belongsToMany(models.Book, {
+      through: models.BorrowedBook,
+      foreignKey: "userId",
+    })
+}
+
 module.exports = User
