@@ -1,15 +1,14 @@
-const {DataTypes} = require('sequelize')
-const sequelize = require('../config')
-
-const BorrowedBook = sequelize.define('BorrowedBook',{
+module.exports = (sequelize, DataTypes) => {
+  const BorrowedBook = sequelize.define('BorrowedBook', {
     borrowDate: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW
     },
     returnDate: {
-        type: DataTypes.DATE,
-        allowNull: true
+      type: DataTypes.DATE,
+      allowNull: true
     }
-})
+  });
 
-module.exports = BorrowedBook
+  return BorrowedBook;
+};
